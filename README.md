@@ -57,7 +57,7 @@ This project is created for **educational purposes only** and is not intended fo
 - Clone the repository:
 
 ```sh
-git clone https://github.com/sandfm118/DAIPs
+git clone https://github.com/thesandf/DAIPs
 cd DAIPs
 ```
 
