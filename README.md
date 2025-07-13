@@ -1,5 +1,13 @@
+<<<<<<< HEAD
 <a name="top"></a>
 ## ⚠️ Disclaimer
+=======
+## ⚠️ Disclaimer
+
+This project is created for **educational purposes only** and is not intended for use in production environments. 
+
+# 🛠️ Decentralized Autonomous Intellectual Property (DAIP) Platform .
+>>>>>>> b541c7cb2d8c3a399184708db713809124b428eb
 
 This project is created for **educational purposes only** and is not intended for use in production environments. **not yed Audited** .
 
