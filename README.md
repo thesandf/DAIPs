@@ -3,11 +3,6 @@
 This project is created for **educational purposes only** and is not intended for use in production environments. 
 
 # 🛠️ Decentralized Autonomous Intellectual Property (DAIP) Platform .
->>>>>>> b541c7cb2d8c3a399184708db713809124b428eb
-
-This project is created for **educational purposes only** and is not intended for use in production environments. **not yed Audited** .
-
-# 🛠️ Decentralized Autonomous Intellectual Property (DAIP) Platform
 
 ### The Decentralized Autonomous Intellectual Property (DAIP) Platform is a decentralized application (dApp) that allows users to create, manage, buy, sell, and govern digital assets representing intellectual properties. These DAIPs combine the features of NFTs (Non-Fungible Tokens) and DAOs (Decentralized Autonomous Organizations), providing a new model for managing intellectual property with community-driven governance.
 
@@ -79,7 +74,7 @@ This project is created for **educational purposes only** and is not intended fo
 - Node.js
 - MetaMask
 - Foundry
-- Ethereum testnet account (Goerli, Mumbai)
+- Ethereum testnet account
 
 ### Installation
 ```sh
