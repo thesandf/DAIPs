@@ -38,7 +38,7 @@ contract DAIPMarketplaceInvariant is Test {
         handler = new DAIPMarketplaceHandler(marketplace, governanceToken, mockToken);
         targetContract(address(handler));
     }
- 
+
     function tokenExists(uint256 tokenId) public view returns (bool) {
         try marketplace.ownerOf(tokenId) returns (address owner) {
             return owner != address(0);
