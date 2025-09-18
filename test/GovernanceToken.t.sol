@@ -24,7 +24,6 @@ contract GovernanceTokenTest is Test {
     address delegate = makeAddr("delegate");
     address attacker = makeAddr("attacker");
 
-
     uint256 amount = 1_00 ether;
     uint256 start = block.timestamp;
     uint256 cliff = 7 days;
@@ -32,11 +31,11 @@ contract GovernanceTokenTest is Test {
 
     address target = admin;
     uint256 value = 0;
-    bytes  data = "";
+    bytes data = "";
     GovernanceToken.Category General = GovernanceToken.Category.General;
     GovernanceToken.Category Upgrade = GovernanceToken.Category.Upgrade;
-    string  descriptionHash = "ipfs://proposal";
-    
+    string descriptionHash = "ipfs://proposal";
+
     uint256 public constant EXECUTION_DELAY = 1 days;
     uint256 public constant INITIAL_SUPPLY = 1_000_000 * 10 ** 18; // or 10 ** decimals()
 
@@ -85,7 +84,6 @@ contract GovernanceTokenTest is Test {
 
         vm.prank(attacker);
         Attacker_Cantract = new AttackerCantract();
-
     }
 
     function test_MintTokensSuccess() public {
@@ -131,15 +129,15 @@ contract GovernanceTokenTest is Test {
         assertEq(token.balanceOf(user), amount);
         assertEq(token.getVotes(user), amount);
     }
-   
-    function test_CannotTransferWhileLocked() public { 
+
+    function test_CannotTransferWhileLocked() public {
         vm.prank(minter);
         token.mintTokens(user, amount);
 
         vm.prank(locker);
-        token.lockTokens(user ,2 days);
+        token.lockTokens(user, 2 days);
 
-        vm.expectRevert(abi.encodeWithSelector(TokensLockedError.selector,token.lockupEnd(user)));
+        vm.expectRevert(abi.encodeWithSelector(TokensLockedError.selector, token.lockupEnd(user)));
         vm.prank(user);
         token.transfer(admin, amount);
     }
@@ -149,22 +147,21 @@ contract GovernanceTokenTest is Test {
         token.mintTokens(user, amount);
 
         vm.prank(locker);
-        token.lockTokens(user ,1 days);
+        token.lockTokens(user, 1 days);
 
         vm.warp(block.timestamp + 2 days); // after lock
         vm.prank(user);
         token.transfer(admin, amount); // should succeed
-        assertEq(token.balanceOf(admin)  , amount + INITIAL_SUPPLY);
+        assertEq(token.balanceOf(admin), amount + INITIAL_SUPPLY);
     }
 
     function test_TransferInsufficientBalanceError() public {
         vm.prank(minter);
         token.mintTokens(user, amount);
         vm.prank(user);
-        vm.expectRevert(abi.encodeWithSelector(InsufficientBalance.selector ,amount,amount + amount));
+        vm.expectRevert(abi.encodeWithSelector(InsufficientBalance.selector, amount, amount + amount));
         token.transfer(admin, amount + amount);
     }
-    
 
     function test_ProposalLifecycle() public {
         vm.prank(admin);
@@ -175,9 +172,9 @@ contract GovernanceTokenTest is Test {
 
         // vote without voting power
         vm.prank(attacker);
-        vm.expectRevert(abi.encodeWithSelector(NoVotingPower.selector ,attacker));
+        vm.expectRevert(abi.encodeWithSelector(NoVotingPower.selector, attacker));
         token.voteOnProposal(pid, false);
- 
+
         vm.warp(block.timestamp + 8 days);
         vm.prank(admin);
         token.executeProposal(pid);
@@ -187,17 +184,17 @@ contract GovernanceTokenTest is Test {
         token.executeProposal(pid);
 
         vm.prank(minter);
-        token.mintTokens(user,amount);
+        token.mintTokens(user, amount);
 
-        vm.expectRevert(abi.encodeWithSelector(AlreadyExecuted.selector ,pid));
+        vm.expectRevert(abi.encodeWithSelector(AlreadyExecuted.selector, pid));
         vm.prank(user);
-        token.voteOnProposal(pid,true);
+        token.voteOnProposal(pid, true);
 
-        (, , , , , , bool executed, , ,) = token.proposals(pid);
+        (,,,,,, bool executed,,,) = token.proposals(pid);
         console.log(executed);
         assertTrue(executed);
     }
-    
+
     function test_RevertIfNotAdminExecutesProposal() public {
         vm.startPrank(admin);
         uint256 pid = token.createProposal(admin, value, data, General, descriptionHash);
@@ -206,10 +203,9 @@ contract GovernanceTokenTest is Test {
 
         vm.warp(block.timestamp + 8 days);
 
-        vm.prank(user);    
+        vm.prank(user);
         vm.expectRevert(abi.encodeWithSelector(NotAdmin.selector));
         token.executeProposal(pid);
-
     }
 
     function test_UpgradeExecutedOnlyByAdmin_UpgradeSucceedsWithEnoughVotes() public {
@@ -230,7 +226,7 @@ contract GovernanceTokenTest is Test {
         Vm.Log[] memory logs = vm.getRecordedLogs();
         bool found;
 
-        for (uint i = 0; i < logs.length; i++) {
+        for (uint256 i = 0; i < logs.length; i++) {
             if (logs[i].topics[0] == keccak256("ProposalExecuted(uint256)")) {
                 found = true;
                 break;
@@ -238,10 +234,10 @@ contract GovernanceTokenTest is Test {
         }
 
         assertTrue(found, "Missing ProposalExecuted event");
-        (, , , , , , bool executed, , , ) = token.proposals(pid);
+        (,,,,,, bool executed,,,) = token.proposals(pid);
         assertTrue(executed, "Proposal should be marked as executed");
     }
-    
+
     function test_UpgradeFailsWithout20PercentVotes() public {
         vm.prank(user);
         uint256 pid = token.createProposal(admin, value, data, Upgrade, descriptionHash);
@@ -256,13 +252,11 @@ contract GovernanceTokenTest is Test {
         vm.warp(block.timestamp + 8 days);
         token.setQueuedAt(pid, block.timestamp - 2 days);
 
-        (, , , , uint256 votesFor, uint256 votesAgainst, , , , ) = token.proposals(pid);
+        (,,,, uint256 votesFor, uint256 votesAgainst,,,,) = token.proposals(pid);
         uint256 totalVotes = votesFor + votesAgainst;
         uint256 requiredVotes = (token.totalSupply() * token.getQuorumPercentage(Upgrade)) / 100;
 
-        vm.expectRevert(
-            abi.encodeWithSelector(NotEnoughVotes.selector, totalVotes, requiredVotes)
-        );
+        vm.expectRevert(abi.encodeWithSelector(NotEnoughVotes.selector, totalVotes, requiredVotes));
 
         // Direct call to _safeExecute to bypass try/catch
         vm.prank(address(token)); // because _safeExecute requires msg.sender == address(this)
@@ -283,16 +277,14 @@ contract GovernanceTokenTest is Test {
         vm.warp(block.timestamp + 8 days);
         token.setQueuedAt(pid, block.timestamp - 2 days);
 
-        (, , , , uint256 votesFor, uint256 votesAgainst, , , , ) = token.proposals(pid);
+        (,,,, uint256 votesFor, uint256 votesAgainst,,,,) = token.proposals(pid);
         uint256 totalVotes = votesFor + votesAgainst;
         uint256 requiredVotes = (token.totalSupply() * token.getQuorumPercentage(General)) / 100;
 
-        vm.expectRevert(
-            abi.encodeWithSelector(NotEnoughVotes.selector, totalVotes, requiredVotes)
-        );
+        vm.expectRevert(abi.encodeWithSelector(NotEnoughVotes.selector, totalVotes, requiredVotes));
 
         vm.prank(address(token)); // required for internal call context
-        token._safeExecute(pid);    
+        token._safeExecute(pid);
     }
 
     function test_ExecuteFailsIfUpgradeProposalCalledByNotAdmin() public {
@@ -306,9 +298,7 @@ contract GovernanceTokenTest is Test {
         token.setQueuedAt(pid, block.timestamp - 1 days);
 
         // Expect revert
-        vm.expectRevert(
-            abi.encodeWithSelector(ProposalAutoExecutionFailedForUpgradeProposal.selector, pid)
-        );
+        vm.expectRevert(abi.encodeWithSelector(ProposalAutoExecutionFailedForUpgradeProposal.selector, pid));
 
         vm.prank(address(token)); // Needed for _safeExecute's internal check
         token._safeExecute(pid);
@@ -361,7 +351,7 @@ contract GovernanceTokenTest is Test {
         token.voteOnProposal(pid, false);
         vm.stopPrank();
     }
-    
+
     function test_ProposalExecutionFails() public {
         vm.prank(admin);
         uint256 pid = token.createProposal(address(Attacker_Cantract), value, data, General, descriptionHash);
@@ -378,21 +368,20 @@ contract GovernanceTokenTest is Test {
         vm.prank(admin);
         vm.expectRevert(abi.encodeWithSelector(ExecutionFailed.selector));
         token.executeProposal(pid);
-        
     }
 
     function test_CancelProposalSuccessfullyByProposerAndRevertIfNotAdminOrProposer() public {
         vm.prank(user);
         uint256 pid = token.createProposal(admin, value, data, General, descriptionHash);
-    
+
         vm.prank(admin);
         token.voteOnProposal(pid, true);
 
         vm.warp(block.timestamp + 8 days);
 
-        //test if not proposer or only 
+        //test if not proposer or only
         vm.prank(attacker);
-        vm.expectRevert(abi.encodeWithSelector(NotAuthorizedToCancelThisProposal.selector ,attacker));
+        vm.expectRevert(abi.encodeWithSelector(NotAuthorizedToCancelThisProposal.selector, attacker));
         token.cancelProposal(pid);
 
         // Record logs for event check
@@ -400,18 +389,16 @@ contract GovernanceTokenTest is Test {
         vm.recordLogs();
         token.cancelProposal(pid);
 
-        (, , , , , , bool executed, , , ) = token.proposals(pid);
+        (,,,,,, bool executed,,,) = token.proposals(pid);
         assertTrue(executed, "Proposal should be marked as executed");
 
         Vm.Log[] memory logs = vm.getRecordedLogs();
         bool found = false;
 
         bytes32 expectedEventSig = keccak256("ProposalCancelled(uint256)");
-        for (uint i = 0; i < logs.length; i++) {
+        for (uint256 i = 0; i < logs.length; i++) {
             if (
-                logs[i].topics.length == 2 &&
-                logs[i].topics[0] == expectedEventSig &&
-                uint256(logs[i].topics[1]) == pid
+                logs[i].topics.length == 2 && logs[i].topics[0] == expectedEventSig && uint256(logs[i].topics[1]) == pid
             ) {
                 found = true;
                 break;
@@ -445,7 +432,7 @@ contract GovernanceTokenTest is Test {
         vm.stopPrank();
 
         // Try canceling from non-admin
-        vm.expectRevert(abi.encodeWithSelector(NotAuthorizedToCancelThisProposal.selector ,user));
+        vm.expectRevert(abi.encodeWithSelector(NotAuthorizedToCancelThisProposal.selector, user));
         vm.prank(user);
         token.cancelProposal(pid);
     }
@@ -456,7 +443,7 @@ contract GovernanceTokenTest is Test {
 
         vm.prank(admin);
         token.voteOnProposal(pid, true);
- 
+
         vm.prank(admin);
         token.executeProposal(pid);
 
@@ -480,7 +467,7 @@ contract GovernanceTokenTest is Test {
         vm.prank(admin);
         token.executeProposal(pid);
     }
-    
+
     function test_ProposalExecutionFailsIfAlreadyExecuted() public {
         vm.startPrank(admin);
         uint256 pid = token.createProposal(admin, value, data, General, descriptionHash);
@@ -492,7 +479,7 @@ contract GovernanceTokenTest is Test {
         vm.warp(block.timestamp + 2 days);
 
         token.executeProposal(pid);
-    
+
         vm.expectRevert(abi.encodeWithSelector(AlreadyExecuted.selector, pid));
         token.executeProposal(pid);
         vm.stopPrank();
@@ -503,23 +490,22 @@ contract GovernanceTokenTest is Test {
         uint256 pid = token.createProposal(admin, value, data, General, descriptionHash);
 
         vm.prank(minter);
-        token.mintTokens(attacker,amount);
+        token.mintTokens(attacker, amount);
 
         vm.prank(attacker);
-        token.voteOnProposal(pid,false);
+        token.voteOnProposal(pid, false);
 
         vm.prank(minter);
-        token.mintTokens(user,10);
+        token.mintTokens(user, 10);
 
         vm.prank(user);
-        token.voteOnProposal(pid,true);
+        token.voteOnProposal(pid, true);
 
-        (, , , , uint256 votesFor , uint256 votesAgainst , , , ,) = token.proposals(pid);
+        (,,,, uint256 votesFor, uint256 votesAgainst,,,,) = token.proposals(pid);
 
         vm.prank(admin);
-        vm.expectRevert(abi.encodeWithSelector(ProposalDidNotPass.selector ,votesFor, votesAgainst));
+        vm.expectRevert(abi.encodeWithSelector(ProposalDidNotPass.selector, votesFor, votesAgainst));
         token.executeProposal(pid);
-
     }
 
     function test_RevertIfProposalNotExists() public {
@@ -535,9 +521,9 @@ contract GovernanceTokenTest is Test {
         uint256 expiration = token.getProposal(pid).expiration;
 
         vm.warp(expiration + 1); // Go just past expiration
-        
+
         vm.expectRevert(abi.encodeWithSelector(ProposalExpired.selector, block.timestamp, expiration));
-        token.voteOnProposal(pid, true); 
+        token.voteOnProposal(pid, true);
         vm.stopPrank();
     }
 
@@ -655,20 +641,20 @@ contract GovernanceTokenTest is Test {
         assertTrue(token.hasRole(token.ADMIN_ROLE(), admin));
     }
 
-    function test_GrantAdminRole_RevokeAdminRole() public{
+    function test_GrantAdminRole_RevokeAdminRole() public {
         vm.prank(admin);
         token.grantAdminRole(user);
-        assertTrue(token.hasRole(token.ADMIN_ROLE(),user));
+        assertTrue(token.hasRole(token.ADMIN_ROLE(), user));
 
         vm.startPrank(admin);
         token.grantAdminRole(user);
-        assertTrue(token.hasRole(token.ADMIN_ROLE(),user));
+        assertTrue(token.hasRole(token.ADMIN_ROLE(), user));
         token.revokeAdminRole(user);
-        assertFalse(token.hasRole(token.ADMIN_ROLE(),user));
+        assertFalse(token.hasRole(token.ADMIN_ROLE(), user));
         vm.stopPrank();
     }
 
-    function test_AttackerCannot_GrantAdminRole_RevokeAdminRole() public{
+    function test_AttackerCannot_GrantAdminRole_RevokeAdminRole() public {
         vm.startPrank(attacker);
         vm.expectRevert();
         token.grantAdminRole(user);
@@ -681,8 +667,8 @@ contract GovernanceTokenTest is Test {
     function test_TransferAdminRole() public {
         vm.startPrank(admin);
         token.transferAdminRole(user);
-        assertTrue(token.hasRole(token.ADMIN_ROLE(),user));
-        assertFalse(token.hasRole(token.ADMIN_ROLE(),admin));
+        assertTrue(token.hasRole(token.ADMIN_ROLE(), user));
+        assertFalse(token.hasRole(token.ADMIN_ROLE(), admin));
         vm.stopPrank();
     }
 
@@ -699,7 +685,7 @@ contract GovernanceTokenTest is Test {
         token.mintTokens(user, mintAmount);
         assertEq(token.balanceOf(user), mintAmount);
     }
-   
+
     function test_AttackerCannotMint() public {
         vm.prank(attacker);
         vm.expectRevert();
@@ -711,13 +697,12 @@ contract GovernanceTokenTest is Test {
         token.lockTokens(user, 1 days);
         assertGt(token.lockupEnd(user), block.timestamp);
     }
-    
+
     function test_AttackerCannotLockTokens() public {
         vm.expectRevert();
         vm.prank(attacker);
         token.lockTokens(user, 1 days);
     }
-
 
     function test_AdminCanGrantAndRevokeRole() public {
         vm.startPrank(admin);
@@ -728,7 +713,7 @@ contract GovernanceTokenTest is Test {
         assertFalse(token.hasRole(token.MINTER_ROLE(), attacker));
         vm.stopPrank();
     }
-    
+
     // function test_NonAdminCannotGrantOrRevokeRole() public {
     //     vm.startPrank(attacker);
     //     vm.expectRevert();
@@ -742,23 +727,23 @@ contract GovernanceTokenTest is Test {
         vm.prank(vester);
         token.vestTokens(user, amount, start, cliff, duration, true);
 
-        (,,uint256 durationStored,uint256 amt,,bool revocable,) = token.vestings(user);
+        (,, uint256 durationStored, uint256 amt,, bool revocable,) = token.vestings(user);
         assertEq(durationStored, duration);
         assertEq(amt, amount);
         assertEq(revocable, true);
     }
 
-     function test_VestTokensRevertIf_ZeroAmount_ZeroDuration_InvalidCliffDuration() public {
+    function test_VestTokensRevertIf_ZeroAmount_ZeroDuration_InvalidCliffDuration() public {
         vm.prank(vester);
         vm.expectRevert(abi.encodeWithSelector(ZeroAmount.selector));
         token.vestTokens(user, 0, start, cliff, duration, true);
- 
+
         vm.prank(vester);
         vm.expectRevert(abi.encodeWithSelector(ZeroDuration.selector));
         token.vestTokens(user, amount, start, cliff, 0, true);
 
         vm.prank(vester);
-        vm.expectRevert(abi.encodeWithSelector(InvalidCliffDuration.selector,100,cliff));
+        vm.expectRevert(abi.encodeWithSelector(InvalidCliffDuration.selector, 100, cliff));
         token.vestTokens(user, amount, start, cliff, 100, true);
     }
 
@@ -780,21 +765,21 @@ contract GovernanceTokenTest is Test {
     function test_RevertOnDoubleVestingWithoutRevocation() public {
         vm.startPrank(vester);
         token.vestTokens(user, amount, start, cliff, duration, true);
-        vm.expectRevert(abi.encodeWithSelector(AlreadyVesting.selector,user));
+        vm.expectRevert(abi.encodeWithSelector(AlreadyVesting.selector, user));
         token.vestTokens(user, amount, start, cliff, duration, true);
         vm.stopPrank();
     }
-    
+
     function test_ReleaseBeforeCliffFails() public {
         vm.prank(vester);
         token.vestTokens(user, amount, start, cliff, duration, true);
-        
+
         vm.warp(block.timestamp + 1 days);
         vm.prank(user);
         vm.expectRevert(abi.encodeWithSelector(NoTokensToRelease.selector)); // will trigger NoTokensToRelease
         token.releaseVestedTokens();
     }
-    
+
     function test_ReleaseAfterCliffSucceeds() public {
         vm.prank(vester);
         token.vestTokens(user, amount, start, cliff, duration, true);
@@ -808,7 +793,7 @@ contract GovernanceTokenTest is Test {
         assertGt(bal, 0);
         assertGt(token.getVotes(user), 0);
     }
-    
+
     function test_FullVestingAfterDuration() public {
         vm.prank(vester);
         token.vestTokens(user, amount, start, cliff, duration, true);
@@ -827,10 +812,10 @@ contract GovernanceTokenTest is Test {
         vm.prank(vester);
         token.revokeVesting(user);
 
-        (, , , , , , bool revoked) = token.vestings(user);
+        (,,,,,, bool revoked) = token.vestings(user);
         assertTrue(revoked);
     }
-    
+
     function test_RevertRevokeIfAlreadyRevoked() public {
         vm.prank(vester);
         token.vestTokens(user, amount, start, cliff, duration, true);
@@ -842,7 +827,7 @@ contract GovernanceTokenTest is Test {
         vm.expectRevert(abi.encodeWithSelector(Error__VestingRevoked.selector));
         token.revokeVesting(user);
     }
-    
+
     function test_RevertRevokeIfNotRevocable() public {
         vm.prank(vester);
         token.vestTokens(user, amount, start, cliff, duration, false);
@@ -851,13 +836,13 @@ contract GovernanceTokenTest is Test {
         vm.expectRevert(abi.encodeWithSelector(NotRevocable.selector));
         token.revokeVesting(user);
     }
-    
+
     function test_RevertReleaseIfNoVesting() public {
         vm.prank(user);
         vm.expectRevert(abi.encodeWithSelector(NoVestingSchedule.selector));
         token.releaseVestedTokens();
     }
-    
+
     function test_RevertReleaseIfRevoked() public {
         vm.prank(vester);
         token.vestTokens(user, amount, start, cliff, duration, true);
@@ -869,7 +854,7 @@ contract GovernanceTokenTest is Test {
         vm.expectRevert(abi.encodeWithSelector(Error__VestingRevoked.selector));
         token.releaseVestedTokens();
     }
-     
+
     function test_RevertIfNothingToRelease() public {
         vm.prank(vester);
         token.vestTokens(user, amount, start, cliff, duration, true);
@@ -885,11 +870,10 @@ contract GovernanceTokenTest is Test {
 
     function test_ReceiveETH() public {
         uint256 sendAmount = 1 ether;
-        vm.deal(user ,100 ether );
+        vm.deal(user, 100 ether);
         vm.prank(user);
-        (bool success, ) = address(token).call{value: sendAmount}("");
+        (bool success,) = address(token).call{value: sendAmount}("");
         assertTrue(success, "Failed to send ETH to receive() function");
         assertEq(address(token).balance, sendAmount, "Contract did not receive ETH");
     }
 }
-

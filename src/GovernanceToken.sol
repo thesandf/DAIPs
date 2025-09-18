@@ -20,7 +20,11 @@ contract GovernanceToken is ERC20, ReentrancyGuard, AccessControl {
     uint256 public constant INITIAL_SUPPLY = 1_000_000 * 10 ** 18;
 
     // ========== Enums ==========
-    enum Category { General, Treasury, Upgrade }
+    enum Category {
+        General,
+        Treasury,
+        Upgrade
+    }
 
     // ========== State Variables ==========
     uint256 public proposalCount;
@@ -66,7 +70,9 @@ contract GovernanceToken is ERC20, ReentrancyGuard, AccessControl {
     event ProposalAutoExecutionFailed(uint256 indexed proposalId, string reason);
     event ProposalCancelled(uint256 indexed proposalId);
     event UpgradeExecutionBlocked(uint256 proposalId);
-    event VestingGranted(address indexed beneficiary, uint256 amount, uint256 start, uint256 cliff, uint256 duration, bool revocable);
+    event VestingGranted(
+        address indexed beneficiary, uint256 amount, uint256 start, uint256 cliff, uint256 duration, bool revocable
+    );
     event VestingRevoked(address indexed beneficiary);
     event VestedTokensReleased(address indexed beneficiary, uint256 amount);
 
@@ -318,11 +324,11 @@ contract GovernanceToken is ERC20, ReentrancyGuard, AccessControl {
     function autoExecuteProposals() public {
         for (uint256 i = 1; i <= proposalCount; i++) {
             if (
-                !proposals[i].executed &&
-                block.timestamp > proposals[i].expiration &&
-                proposals[i].votesFor > proposals[i].votesAgainst
+                !proposals[i].executed && block.timestamp > proposals[i].expiration
+                    && proposals[i].votesFor > proposals[i].votesAgainst
             ) {
-                try this._safeExecute(i) {} catch Error(string memory reason) {
+                try this._safeExecute(i) {}
+                catch Error(string memory reason) {
                     emit ProposalAutoExecutionFailed(i, reason);
                 } catch (bytes memory lowLevelData) {
                     bytes4 selector;
@@ -372,9 +378,9 @@ contract GovernanceToken is ERC20, ReentrancyGuard, AccessControl {
             revert ProposalAutoExecutionFailedForUpgradeProposal(proposalId);
         }
 
-        (bool success, ) = p.target.call{value: p.value}(p.data);
-        if (!success) revert ExecutionFailed();
         p.executed = true;
+        (bool success,) = p.target.call{value: p.value}(p.data);
+        if (!success) revert ExecutionFailed();
         emit ProposalExecuted(proposalId);
     }
 
@@ -384,12 +390,12 @@ contract GovernanceToken is ERC20, ReentrancyGuard, AccessControl {
         Proposal storage p = proposals[proposalId];
         if (p.executed) revert AlreadyExecuted(proposalId);
         if (msg.sender != p.proposer && !hasRole(ADMIN_ROLE, msg.sender)) {
-        revert NotAuthorizedToCancelThisProposal(msg.sender);
-         }
+            revert NotAuthorizedToCancelThisProposal(msg.sender);
+        }
         p.executed = true; // Mark as executed to block future execution
         emit ProposalCancelled(proposalId);
     }
-   
+
     // ========== Admin Utilities ==========
 
     /// @notice Grants ADMIN_ROLE to another account.
