@@ -1,6 +1,31 @@
-## ⚠️ Disclaimer
+# 🏗️ DAIP Audit Challenge: Defend the Decentralized IP Multiverse
 
-This project is created for **educational purposes only** and is not intended for use in production environments. 
+Welcome to the **DAIP Audit Challenge** — hosted by [thesandf.xyz](https://www.thesandf.xyz/contest/)  
+Your mission: channel your inner Iron Man, Naruto, or Link and step into the DAIP multiverse!  
+Audit, analyze, and secure the **Decentralized Autonomous Intellectual Property (DAIP)** Platform.
+
+📅 **Challenge Timeline:**  
+Start: **17 Oct 2025** | End: **27 Oct 2025** | Results: **29 Oct 2025**
+
+📨 **Submit Reports Privately:** [Submission Form →](https://www.thesandf.xyz/submit/)
+
+---
+
+## 🔗 Quick Links
+- 🌐 [Challenge Page](https://www.thesandf.xyz/contest/)
+- 📝 [Submission Form](https://www.thesandf.xyz/submit/)
+- 🦸 [Hall of Heroes](https://www.thesandf.xyz/Hall-of-Heroes/)
+- 💬 [GitHub Discussions](https://github.com/thesandf/thesandf.xyz/discussions/categories/community)
+- 🧰 [Audit Starter Kit (Foundry)](https://book.getfoundry.sh/)
+- 📚 [OpenZeppelin Docs](https://docs.openzeppelin.com/contracts)
+
+---
+
+## ⚠️ Disclaimer
+This project is created for **educational and auditing purposes only**.  
+It is **not intended for production deployment**.
+
+---
 
 # 🛠️ Decentralized Autonomous Intellectual Property (DAIP) Platform .
 
@@ -19,12 +44,6 @@ This project is created for **educational purposes only** and is not intended fo
 - **Metadata Control**: Supports upgradable metadata with optional freezing under governance authority.
 - **Smart Contracts**: All logic is secured by Ethereum smart contracts.
 
-## 🔧 Planned Enhancements
-- **DeFi Integration**: Earn royalties or lending income from DAIPs through decentralized finance protocols.
-- **Cross-Market Compatibility**: Trade DAIPs on platforms like OpenSea.
-- **AI Auditing**: Automatic IP auditing and compliance via AI.
-- **Fee Optimization**: Gas-optimized operations and efficient batch transactions.
-
 ## Tech Stack
 
 ### Backend (Smart Contracts)
@@ -32,13 +51,8 @@ This project is created for **educational purposes only** and is not intended fo
 - **Foundry**: Toolkit for smart contract development and testing.
 - **OpenZeppelin Contracts**: Security-audited libraries for ERC standards and access control.
 
-### Frontend (dApp)
-- **Next.js**: React-based framework for building user interfaces.
-- **Ethers.js**: Ethereum interaction library.
-- **Tailwind CSS**: Utility-first framework for responsive UIs.
-
 ### Blockchain & Tools
-- **Ethereum (Goerli/Mumbai)**: Main and test networks.
+- **Ethereum (testNet)**: Main and test networks.
 - **MetaMask**: Wallet for account and transaction management.
 - **Infura**: Ethereum infrastructure service for node access.
 
@@ -58,7 +72,7 @@ This project is created for **educational purposes only** and is not intended fo
 
 ---
 
-## 📖 Recommended Reading for DAIP Project
+## 📖 Recommended Reading for DAIP Project ( Not Recommended For Audit).
 
 | Section                    | Suggested Resources |
 |---------------------------|----------------------|
@@ -78,29 +92,25 @@ This project is created for **educational purposes only** and is not intended fo
 
 ### Installation
 ```sh
-git clone https://github.com/thesandf/DAIPs
-cd DAIPs
-npm install
+git clone https://github.com/thesandf/DAIPs.git
+cd DAIPs && forge install
+forge test
 ```
-
-### Environment Variables
-```sh
-NEXT_PUBLIC_INFURA_PROJECT_ID=<your-infura-project-id>
-NEXT_PUBLIC_CONTRACT_ADDRESS=<deployed-daip-contract-address>
-```
-
 ### Deployment
 ```sh
 forge create --rpc-url <RPC_URL> --private-key <PRIVATE_KEY> src/DAIP.sol
 ```
 
-### Run dApp
-```sh
-npm run dev
+## 🔍 Audit Scope  **[Read docs here](./docs/README.md)**
+
+Auditors should review the following contracts: 
+```
+src/
+├── DAIPMarketplace.sol
+└── GovernanceToken.sol
 ```
 
-Open in browser: `http://localhost:3000`
-
+⚠️ Known Issues: None listed — this is a **fresh playground for your eyes only.**
 ## Smart Contract Overview
 
 ### 🧾 GovernanceToken.sol
@@ -120,6 +130,29 @@ Open in browser: `http://localhost:3000`
 - DAO-based parameter updates
 
 ---
+
+## 🧾 Submission Guidelines
+
+Submit reports **privately** via the [Submission Form](https://www.thesandf.xyz/submit/) to prevent copying.  
+Include your findings, PoC, and contact info.
+
+Each report should follow this template:
+```
+[S-#] TITLE
+Description:
+Explain the issue clearly.
+
+Impact:
+What’s at risk?
+
+Proof of Concept:
+Code snippet / Foundry test.
+
+Recommended Mitigation:
+Suggested fix or design change.
+```
+
+📅 Challenge ends **27 Oct 2025**, results announced **29 Oct 2025**.
 
 ## 🤝 Open for Contributions
 
