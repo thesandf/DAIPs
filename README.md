@@ -1,32 +1,3 @@
-# 🏗️ DAIP Audit Challenge: Defend the Decentralized IP Multiverse
-
-Welcome to the **DAIP Audit Challenge** — hosted by [thesandf.xyz](https://www.thesandf.xyz/contest/)  
-Your mission: channel your inner Iron Man, Naruto, or Link and step into the DAIP multiverse!  
-Audit, analyze, and secure the **Decentralized Autonomous Intellectual Property (DAIP)** Platform.
-
-📅 **Challenge Timeline:**  
-Start: **17 Oct 2025** | End: **27 Oct 2025** | Results: **29 Oct 2025**
-
-📨 **Submit Reports Privately:** [Submission Form →](https://www.thesandf.xyz/submit/)
-
----
-
-## 🔗 Quick Links
-- 🌐 [Challenge Page](https://www.thesandf.xyz/contest/)
-- 📝 [Submission Form](https://www.thesandf.xyz/submit/)
-- 🦸 [Hall of Heroes](https://www.thesandf.xyz/Hall-of-Heroes/)
-- 💬 [GitHub Discussions](https://github.com/thesandf/thesandf.xyz/discussions/categories/community)
-- 🧰 [Audit Starter Kit (Foundry)](https://book.getfoundry.sh/)
-- 📚 [OpenZeppelin Docs](https://docs.openzeppelin.com/contracts)
-
----
-
-## ⚠️ Disclaimer
-This project is created for **educational and auditing purposes only**.  
-It is **not intended for production deployment**.
-
----
-
 # 🛠️ Decentralized Autonomous Intellectual Property (DAIP) Platform .
 
 ### The Decentralized Autonomous Intellectual Property (DAIP) Platform is a decentralized application (dApp) that allows users to create, manage, buy, sell, and govern digital assets representing intellectual properties. These DAIPs combine the features of NFTs (Non-Fungible Tokens) and DAOs (Decentralized Autonomous Organizations), providing a new model for managing intellectual property with community-driven governance.
